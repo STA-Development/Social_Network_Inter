@@ -10,8 +10,7 @@ export const SignUp = (): any => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // @ts-ignore
-  const handleSignUp = async (e) => {
+  const handleSignUp = async (e: any) => {
     e.preventDefault();
     try {
       const userCredential = await createUserWithEmailAndPassword(
@@ -20,9 +19,7 @@ export const SignUp = (): any => {
         password,
       );
       const user = userCredential.user;
-
       navigate("/login");
-      console.log(user);
     } catch (error: any) {
       console.log(error.message);
     }
@@ -59,16 +56,6 @@ export const SignUp = (): any => {
           <form>
             <div className="flex flex-col justify-around">
               <input
-                type="text"
-                placeholder="Name"
-                className="p-2 m-2 rounded border-inherit border-2"
-              />
-              <input
-                type="text"
-                placeholder="Surname"
-                className="p-2 m-2 rounded border-inherit border-2"
-              />
-              <input
                 type="email"
                 placeholder="Email"
                 className="p-2 m-2 rounded border-inherit border-2"
@@ -92,7 +79,7 @@ export const SignUp = (): any => {
                 </p>
               </div>
               <button
-                className="px-4 py-3 mt-12 mx-12 mb-2 mx-2 border flex justify-center gap-2 bg-green-600 border-slate-200 rounded-lg text-white hover:border-slate-400 hover:text-slate-100 hover:shadow transition duration-150"
+                className="px-4 py-3 mt-12 mx-12 mb-2 border flex justify-center gap-2 bg-green-600 border-slate-200 rounded-lg text-white hover:border-slate-400 hover:text-slate-100 hover:shadow transition duration-150"
                 onClick={handleSignUp}
               >
                 Sign Up

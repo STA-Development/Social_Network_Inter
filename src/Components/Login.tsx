@@ -1,5 +1,9 @@
 import { auth, provider } from "../firebase";
-import { signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
+import {
+  signInWithPopup,
+  signInWithEmailAndPassword,
+  getAuth,
+} from "firebase/auth";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -16,9 +20,11 @@ export const Login = () => {
         email,
         password,
       );
-      const user = userCredential.user;
-      navigate("/");
-      console.log(777);
+      const accessToken = await auth.currentUser?.getIdToken();
+      if (accessToken) {
+        localStorage.setItem("accessToken", accessToken);
+      }
+      navigate("/profile");
     } catch (error: any) {
       console.log(error.message);
     }
@@ -27,10 +33,12 @@ export const Login = () => {
     try {
       const userCredential = await signInWithPopup(auth, provider);
       const user = userCredential.user;
-      navigate("/");
       console.log(user);
+      const token = localStorage.getItem("accessToken");
+      navigate("/profile");
     } catch (error: any) {
       const errorMessage = error.message;
+      console.log(errorMessage);
     }
   };
 
@@ -71,12 +79,6 @@ export const Login = () => {
               onClick={handleSignIn}
             >
               Login
-            </button>
-            <button
-              className="bg-green-500 text-white font-bold px-2 py-4 mx-20 my-4"
-              onClick={() => navigate("/signup")}
-            >
-              Create new account
             </button>
           </div>
         </form>
