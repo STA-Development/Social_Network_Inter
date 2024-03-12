@@ -14,3 +14,8 @@
 input.visuallyHidden:is(:focus, :focus-within) + label {
     outline: thin dotted;
 }
+
+
+body{
+    overflow: hidden;
+}
