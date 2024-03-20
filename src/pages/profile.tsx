@@ -1,13 +1,10 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { dispatch, useAppSelector } from "../redux/hooks";
 import { profileMiddleware, profileSelector } from "../redux/slices/profile";
-import { useNavigate } from "react-router-dom";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../firebase";
-import { Loading } from "../Components/Loading";
 
 export const Profile = () => {
-  const navigate = useNavigate();
   const [avatarUrl, setAvatarUrl] = useState<string>("");
   const [coverImageUrl, setCoverImageUrl] = useState<string>("");
   const [isUploadButtonVisible, setIsUploadButtonVisible] =
@@ -17,10 +14,8 @@ export const Profile = () => {
     profileSelector.isProfileImageLoading,
   );
 
-  const shouldRedirectToCreateProfile = useAppSelector(
-    profileSelector.shouldRedirectToCreateProfile,
-  );
   const profile = useAppSelector(profileSelector.profile);
+  console.log(profile);
 
   const handleAvatarUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedImage = event.currentTarget?.files?.[0];
@@ -47,9 +42,6 @@ export const Profile = () => {
     uploadBytes(imageRef, selectedCoverImage).then((snapshot) => {
       getDownloadURL(snapshot.ref).then((url) => {
         setCoverImageUrl(url);
-        // dispatch(profileMiddleware.updateProfileImage(url));
-
-        // setIsEditVisible(true);
       });
     });
   };
@@ -71,16 +63,6 @@ export const Profile = () => {
     setIsUploadButtonVisible(false);
   }, [isUploadButtonVisible]);
 
-  useEffect(() => {
-    if (shouldRedirectToCreateProfile) {
-      navigate("/createProfile");
-    }
-    dispatch(profileMiddleware.shouldRedirectToCreateProfile(false));
-  }, [shouldRedirectToCreateProfile]);
-
-  useEffect(() => {
-    dispatch(profileMiddleware.getProfile());
-  }, []);
   return (
     <>
       <div className="flex flex-col mt-4 h-[100vh] items-center bg-[#f0f8ff]">
@@ -102,7 +84,7 @@ export const Profile = () => {
               onChange={handleCoverImageUpload}
             />
             <label
-              htmlFor="upload"
+              htmlFor="uploadCoverImageInput"
               className="flex flex-col items-center gap-2 cursor-pointer"
             ></label>
             <svg
@@ -175,7 +157,7 @@ export const Profile = () => {
                 onChange={handleAvatarUpload}
               />
               <label
-                htmlFor="upload"
+                htmlFor="uploadAvatarInput"
                 className="flex flex-col items-center gap-2 cursor-pointer"
               ></label>
 
@@ -236,7 +218,7 @@ export const Profile = () => {
           <p className="text-4xl font-bold">
             {profile.name} {profile.surname}
           </p>
-          <p>{profile.email}</p>
+          <p>{profile.email} </p>
         </div>
       </div>
     </>

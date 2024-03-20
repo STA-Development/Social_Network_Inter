@@ -16,6 +16,9 @@ const reducers = createReducer({
   setIndividualPost(state, action: IAction<IIndividualPost>) {
     state.post = action.payload;
   },
+  setUserPosts(state, action: IAction<IIndividualPost[]>) {
+    state.posts = action.payload;
+  },
 });
 
 export default reducers;

@@ -1,6 +1,7 @@
-import { IIndividualPost, IPosts } from "../../Interfaces/postsTypes";
+import { IIndividualPost } from "../../Interfaces/postsTypes";
 
 export interface IPostsProps {
   post: IIndividualPost;
-  isPostsLoading: boolean;
+  isPostsLoading?: boolean;
+  posts?: IIndividualPost[];
 }

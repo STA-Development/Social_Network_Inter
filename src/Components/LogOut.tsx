@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import React from "react";
 
 import { auth } from "../firebase";
+import { dispatch } from "../redux/hooks";
+import { profileMiddleware } from "../redux/slices/profile";
 
 export const LogOut = () => {
   const navigate = useNavigate();

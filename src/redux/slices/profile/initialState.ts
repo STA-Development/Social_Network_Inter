@@ -3,6 +3,7 @@ import { IProfile } from "../../../Interfaces/profileTypes";
 
 export const getInitialState = (): IProfileProps => ({
   profile: {
+    id: 0,
     name: "",
     surname: "",
     email: "",

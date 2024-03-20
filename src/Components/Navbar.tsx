@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
-import React from "react";
+import React, { useEffect } from "react";
 import { ReactComponent as MainLogo } from "../logo.svg";
 import { useNavigate } from "react-router-dom";
 import { LogOut } from "./LogOut";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { dispatch, useAppSelector } from "../redux/hooks";
 import { userMiddleware, userSelector } from "../redux/slices/user";
+import { profileMiddleware, profileSelector } from "../redux/slices/profile";
 
 export const Navbar = () => {
   const navigate = useNavigate();
@@ -16,6 +17,19 @@ export const Navbar = () => {
     dispatch(userMiddleware.isAuthLoading(false));
     dispatch(userMiddleware.isUserAuth(!!user));
   });
+  const shouldRedirectToCreateProfile = useAppSelector(
+    profileSelector.shouldRedirectToCreateProfile,
+  );
+  useEffect(() => {
+    if (shouldRedirectToCreateProfile) {
+      navigate("/createProfile");
+    }
+    dispatch(profileMiddleware.shouldRedirectToCreateProfile(false));
+  }, [shouldRedirectToCreateProfile]);
+
+  useEffect(() => {
+    dispatch(profileMiddleware.getProfile());
+  }, []);
 
   return (
     <nav className="bg-white dark:bg-gray-900 fixed w-full z-20 top-0 left-0 border-b border-gray-200 dark:border-gray-600">

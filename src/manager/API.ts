@@ -1,8 +1,9 @@
 import profileManager from "./profileManager";
+import postsManager from "./postManager";
 
 const API = {
   profile: profileManager,
-  // posts:
+  posts: postsManager,
 };
 
 export default API;

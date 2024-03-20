@@ -22,7 +22,6 @@ export const CreateProfile = () => {
     dispatch(
       profileMiddleware.sendProfileData({ name, surname, email }, () => {
         dispatch(profileMiddleware.shouldRedirectToCreateProfile(false));
-        console.log("mtav ste");
         navigate("/profile");
       }),
     );

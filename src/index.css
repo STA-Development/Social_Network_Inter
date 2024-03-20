@@ -16,6 +16,6 @@ input.visuallyHidden:is(:focus, :focus-within) + label {
 }
 
 
-body{
-    overflow: hidden;
-}
+/*body{*/
+/*    overflow: hidden;*/
+/*}*/

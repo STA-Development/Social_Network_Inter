@@ -1,15 +1,23 @@
 import { CreatePostModal } from "../Components/CreatePostModal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IndividualPost } from "../Components/IndividualPost";
 import { IIndividualPost } from "../Interfaces/postsTypes";
+import { dispatch, useAppSelector } from "../redux/hooks";
+import { postsMiddleware, postsSelector } from "../redux/slices/posts";
+import { profileSelector } from "../redux/slices/profile";
+import { Loading } from "../Components/Loading";
 
 export const Posts = () => {
-  //TODO: Change posts with posts  coming from backend and type
-  const posts: IIndividualPost[] = [];
   const [showModal, setShowModal] = useState(false);
   const handleCreatePost = () => {
     setShowModal(true);
   };
+  const posts = useAppSelector(postsSelector.userPosts);
+  const profile = useAppSelector(profileSelector.profile);
+
+  useEffect(() => {
+    dispatch(postsMiddleware.getUserPosts(profile.id, 1));
+  }, [profile.id]);
 
   return (
     <div className="p-5 flex flex-col items-center">
@@ -24,7 +32,13 @@ export const Posts = () => {
       >
         Create post
       </button>
-      <IndividualPost />
+      {posts ? (
+        posts.map((post: IIndividualPost) => {
+          return <IndividualPost post={post} />;
+        })
+      ) : (
+        <Loading />
+      )}
     </div>
   );
 };

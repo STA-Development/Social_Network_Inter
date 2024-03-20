@@ -1,5 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { read } from "fs";
+import { dispatch, useAppSelector } from "../redux/hooks";
+import { postsMiddleware } from "../redux/slices/posts";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { storage } from "../firebase";
+import { profileMiddleware, profileSelector } from "../redux/slices/profile";
+import { IndividualPost } from "./IndividualPost";
 
 export const CreatePostModal = ({
   showModal,
@@ -8,14 +14,43 @@ export const CreatePostModal = ({
   showModal: boolean;
   setShowModal: (value: boolean) => void;
 }) => {
-  const [image, setImage] = useState("");
-  function previewImage(event: any) {
-    let input = event.target;
-    if (input.files && input.files[0]) {
-      setImage(URL.createObjectURL(input.files[0]));
-    }
-  }
-  // @ts-ignore
+  const [title, setTitle] = useState<string>("");
+  const [postText, setPostText] = useState<string>("");
+  const [imageUrl, setImageUrl] = useState<string>("");
+  // const previewImage = (event: any) => {
+  //   let input = event.target;
+  //   if (input.files && input.files[0]) {
+  //     setPostImage(URL.createObjectURL(input.files[0]));
+  //   }
+  // };
+  const profileId = useAppSelector(profileSelector.profileId);
+
+  const handlePostImageUpload = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const selectedPostImage = event.currentTarget?.files?.[0];
+    if (!selectedPostImage) return;
+
+    const imageRef = ref(storage, `/images/${selectedPostImage.name}`);
+    uploadBytes(imageRef, selectedPostImage).then((snapshot) => {
+      getDownloadURL(snapshot.ref).then((url) => {
+        setImageUrl(url);
+        // dispatch(profileMiddleware.updateProfileImage(url));
+      });
+    });
+  };
+
+  const onModalSubmit = () => {
+    dispatch(
+      postsMiddleware.createPost(
+        { title, postText, imageUrl, profileId },
+        profileId,
+        1,
+      ),
+    );
+    setShowModal(false);
+  };
+
   return (
     <>
       {showModal ? (
@@ -39,33 +74,46 @@ export const CreatePostModal = ({
                     <label className="block text-black text-sm font-bold mb-1">
                       Title
                     </label>
-                    <input className="shadow appearance-none border rounded w-full py-2 px-1 text-black" />
+                    <input
+                      aria-required
+                      className="shadow appearance-none border rounded w-full py-2 px-1 text-black"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setTitle(e.target.value)
+                      }
+                    />
                     <label className="block text-black text-sm font-bold mb-1">
                       Post text
                     </label>
                     <textarea
-                      className="shadow appearance-none border rounded w-full py-2 px-1 text-black"
+                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                        setPostText(e.target.value)
+                      }
+                      aria-required
+                      className=" shadow appearance-none border rounded w-full py-2 px-1 text-black"
                       placeholder="What's on your mind?"
                     />
                     <label className="block text-black text-sm font-bold mb-1">
                       Image
                     </label>
                     <input
+                      aria-required
                       className="shadow appearance-none border rounded w-full py-2 px-1 text-black"
                       type="file"
                       accept="image/*"
                       name="image"
                       id="file"
-                      onChange={previewImage}
+                      onChange={handlePostImageUpload}
                     />
-                    <div className="flex justify-center">
-                      <img
-                        id="preview"
-                        alt="Preview Image"
-                        src={image}
-                        className="w-48 h-48"
-                      />
-                    </div>
+                    {showModal ? (
+                      <div className="flex justify-center">
+                        <img
+                          id="preview"
+                          alt="Preview Image"
+                          src={imageUrl}
+                          className="w-48 h-48"
+                        />
+                      </div>
+                    ) : null}
                   </form>
                 </div>
                 <div className="flex items-center justify-end p-2 border-t border-solid border-blueGray-200 rounded-b">
@@ -79,7 +127,7 @@ export const CreatePostModal = ({
                   <button
                     className="text-white bg-yellow-500 active:bg-yellow-700 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
                     type="button"
-                    onClick={() => setShowModal(false)}
+                    onClick={onModalSubmit}
                   >
                     Create
                   </button>

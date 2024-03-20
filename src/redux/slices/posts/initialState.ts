@@ -8,4 +8,5 @@ export const getInitialState = (): IPostsProps => ({
     title: "",
   },
   isPostsLoading: false,
+  posts: [],
 });

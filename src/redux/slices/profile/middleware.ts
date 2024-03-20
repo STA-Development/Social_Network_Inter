@@ -1,9 +1,7 @@
 import { AppDispatch } from "../../store";
 import { profileSlice } from "./index";
 import API from "../../../manager/API";
-import profileManager from "../../../manager/profileManager";
 import { dispatch } from "../../hooks";
-import { createAction } from "@reduxjs/toolkit";
 
 const {
   setProfileLoading,
@@ -41,6 +39,12 @@ const sendProfileData =
     }
   };
 
+const resetProfile = (dispatch: AppDispatch) => {
+  dispatch(
+    setProfile({ id: 0, name: "", surname: "", avatarUrl: "", email: "" }),
+  );
+};
+
 const shouldRedirectToCreateProfile =
   (shouldRedirect: boolean) => async (dispatch: AppDispatch) => {
     dispatch(setShouldRedirectToCreateProfile(shouldRedirect));
@@ -65,4 +69,5 @@ export default {
   shouldRedirectToCreateProfile,
   updateUserAvatar,
   updateProfileImage,
+  resetProfile,
 };
