@@ -1,17 +1,14 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { signInWithPopup, createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, provider } from "../firebase";
 import { Link, useNavigate } from "react-router-dom";
 
-export const SignUp = (): any => {
+export const SignUp = () => {
   const navigate = useNavigate();
-  const [name, setName] = useState("");
-  const [surname, setSurName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // @ts-ignore
-  const handleSignUp = async (e) => {
+  const handleSignUp = async (e: React.FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
     try {
       const userCredential = await createUserWithEmailAndPassword(
@@ -22,9 +19,8 @@ export const SignUp = (): any => {
       const user = userCredential.user;
 
       navigate("/login");
-      console.log(user);
-    } catch (error: any) {
-      console.log(error.message);
+    } catch (error: unknown) {
+      throw new Error("Sign up failed")
     }
   };
 
@@ -33,9 +29,8 @@ export const SignUp = (): any => {
       const userCredential = await signInWithPopup(auth, provider);
       const user = userCredential.user;
       navigate("/login");
-      console.log(user);
-    } catch (error: any) {
-      const errorMessage = error.message;
+    } catch (error: unknown) {
+      throw new Error("Sign up failed")
     }
   };
 

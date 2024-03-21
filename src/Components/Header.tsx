@@ -12,9 +12,8 @@ export const Header = () => {
     try {
       await signOut(auth);
       navigate("/");
-    } catch (error: any) {
-      const errorMessage = error.message;
-      console.log(errorMessage);
+    } catch (error: unknown) {
+      throw new Error("You're still signed in")
     }
   };
   return (
@@ -30,16 +29,6 @@ export const Header = () => {
         <li>
           <Link to="/feed">Feed</Link>
         </li>
-        {/*        {user ? (
-          <li>
-            <button
-              onClick={() => navigate("/login")}
-              className="bg-white px-12 py-3 font-bold rounded-md text-cyan-600 mr-2"
-            >
-              Login
-            </button>
-          </li>
-        ) : null}*/}
         <li>
           <button
             onClick={() => navigate("/login")}

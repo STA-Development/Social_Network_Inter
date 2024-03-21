@@ -7,8 +7,7 @@ export const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  // @ts-ignore
-  const handleSignIn = async (e) => {
+  const handleSignIn = async (e: React.FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
     try {
       const userCredential = await signInWithEmailAndPassword(
@@ -18,9 +17,8 @@ export const Login = () => {
       );
       const user = userCredential.user;
       navigate("/");
-      console.log(777);
-    } catch (error: any) {
-      console.log(error.message);
+    } catch (error: unknown) {
+      throw new Error("Sign in failed")
     }
   };
   const handleGoogleSignIn = async () => {
@@ -28,9 +26,8 @@ export const Login = () => {
       const userCredential = await signInWithPopup(auth, provider);
       const user = userCredential.user;
       navigate("/");
-      console.log(user);
-    } catch (error: any) {
-      const errorMessage = error.message;
+    } catch (error: unknown) {
+      throw new Error("Sign in failed")
     }
   };
 
