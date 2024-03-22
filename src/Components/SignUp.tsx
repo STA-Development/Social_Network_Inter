@@ -1,39 +1,24 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { signInWithPopup, createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, provider } from "../firebase";
 import { Link, useNavigate } from "react-router-dom";
+import {dispatch} from "../redux/hooks";
+import {userMiddleware} from "../redux/slices/user";
 
-export const SignUp = (): any => {
+export const SignUp = () => {
   const navigate = useNavigate();
-  const [name, setName] = useState("");
-  const [surname, setSurName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSignUp = async (e: any) => {
+  const handleSignUp = (e: React.FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password,
-      );
-      const user = userCredential.user;
+    dispatch(userMiddleware.userSignUpWithEmailAndPassword(email, password))
       navigate("/login");
-    } catch (error: any) {
-      console.log(error.message);
-    }
   };
 
-  const handleGoogleSignUp = async () => {
-    try {
-      const userCredential = await signInWithPopup(auth, provider);
-      const user = userCredential.user;
+  const handleGoogleSignUp = () => {
+   dispatch(userMiddleware.userSignUpWithGoogle())
       navigate("/login");
-      console.log(user);
-    } catch (error: any) {
-      const errorMessage = error.message;
-    }
   };
 
   return (
