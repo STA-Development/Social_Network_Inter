@@ -6,13 +6,11 @@ import { Home } from "./Components/Home";
 import { Posts } from "./Components/Posts";
 import { Feed } from "./Components/Feed";
 import { Header } from "./Components/Header";
-import { Profile } from "./Components/Profile";
 
 function App() {
   return (
     <div>
       <Header />
-      <Profile />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
