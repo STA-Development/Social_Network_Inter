@@ -1,7 +1,6 @@
-import { getEnvironmentalVariables } from "../utils/getEnvironmentalVariables";
 import { Axios } from "./axiosinstance";
+import { IProfileFormData } from "../Interfaces/profileTypes";
 
-const baseURL = getEnvironmentalVariables().REACT_APP_API_URL;
 const axiosInstance = Axios();
 const profileManager = {
   axiosInstance,
@@ -12,7 +11,7 @@ const profileManager = {
       throw new Error();
     }
   },
-  sendUserProfileInfo(data: object) {
+  sendUserProfileInfo(data: IProfileFormData) {
     return axiosInstance.post(`profile`, data);
   },
   updateUserAvatar(avatarURL: string) {

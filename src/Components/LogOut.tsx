@@ -1,21 +1,14 @@
-import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import React from "react";
-
-import { auth } from "../firebase";
 import { dispatch } from "../redux/hooks";
-import { profileMiddleware } from "../redux/slices/profile";
+import {userMiddleware} from "../redux/slices/user";
 
 export const LogOut = () => {
   const navigate = useNavigate();
-  const handleSignOut = async () => {
-    try {
-      await signOut(auth);
-      localStorage.removeItem("accessToken");
-      navigate("/login");
-    } catch (error: any) {
-      console.log(error);
-    }
+  const handleSignOut = () => {
+    dispatch(userMiddleware.userSignOut())
+    navigate("/login");
+
   };
   return (
     <div>

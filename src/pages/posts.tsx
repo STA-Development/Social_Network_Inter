@@ -1,4 +1,4 @@
-import { CreatePostModal } from "../Components/CreatePostModal";
+import { CreatePost } from "../Modals/CreatePost";
 import { useEffect, useState } from "react";
 import { IndividualPost } from "../Components/IndividualPost";
 import { IIndividualPost } from "../Interfaces/postsTypes";
@@ -14,14 +14,16 @@ export const Posts = () => {
   };
   const posts = useAppSelector(postsSelector.userPosts);
   const profile = useAppSelector(profileSelector.profile);
-
+  const isPostsLoading = useAppSelector(postsSelector.isPostsLoading);
   useEffect(() => {
-    dispatch(postsMiddleware.getUserPosts(profile.id, 1));
-  }, [profile.id]);
+    if (profile) {
+      dispatch(postsMiddleware.getUserPosts(profile.id, 1));
+    }
+  }, [profile?.id]);
 
   return (
     <div className="p-5 flex flex-col items-center">
-      <CreatePostModal showModal={showModal} setShowModal={setShowModal} />
+      <CreatePost showModal={showModal} setShowModal={setShowModal} />
       For a new post press below.
       <button
         data-target="authentication-modal"
@@ -32,13 +34,15 @@ export const Posts = () => {
       >
         Create post
       </button>
-      {posts ? (
+      {isPostsLoading ? (
+        <div className="mt-2">
+          <Loading />
+        </div>
+      ) : posts ? (
         posts.map((post: IIndividualPost) => {
           return <IndividualPost post={post} />;
         })
-      ) : (
-        <Loading />
-      )}
+      ) : null}
     </div>
   );
 };

@@ -20,7 +20,7 @@ const reducers = createReducer({
     state.shouldRedirectToCreateProfile = action.payload;
   },
   setUserAvatar(state, action: IAction<string>) {
-    state.profile.avatarUrl = action.payload;
+    state.avatarURL = action.payload;
   },
   setProfileImageLoading(state, action) {
     state.isProfileImageLoading = action.payload;

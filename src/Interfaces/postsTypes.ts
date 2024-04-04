@@ -11,8 +11,15 @@ export interface IComment {
   userSurname: string;
 }
 export interface IIndividualPost {
-  id: number;
+  profileId: number;
   imageUrl: string;
   postText: string;
   title: string;
+}
+
+export interface IPostFormData {
+  title: string;
+  postText: string;
+  previewImage: string | null | any;
+  profileId?: number;
 }

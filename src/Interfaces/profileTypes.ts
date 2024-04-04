@@ -5,3 +5,9 @@ export interface IProfile {
   email: string;
   avatarUrl: string;
 }
+
+export interface IProfileFormData {
+  name: string;
+  surname: string;
+  email: string;
+}

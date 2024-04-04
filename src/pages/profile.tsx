@@ -1,12 +1,14 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { dispatch, useAppSelector } from "../redux/hooks";
 import { profileMiddleware, profileSelector } from "../redux/slices/profile";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../firebase";
+import { Loading } from "../Components/Loading";
+import EditIcon from "../Icons/EditIcon";
+import DefaultAvatarIcon from "../Icons/DefaultAvatarIcon";
+import AvatarEditIcon from "../Icons/AvatarEditicon";
 
 export const Profile = () => {
-  const [avatarUrl, setAvatarUrl] = useState<string>("");
-  const [coverImageUrl, setCoverImageUrl] = useState<string>("");
   const [isUploadButtonVisible, setIsUploadButtonVisible] =
     useState<boolean>(true);
   const [isEditVisible, setIsEditVisible] = useState<boolean>(false);
@@ -14,49 +16,44 @@ export const Profile = () => {
     profileSelector.isProfileImageLoading,
   );
 
+  const [selectedImage, setSelectedImage] = useState<null | File>(null);
+  const [previewImage, setPreviewImage] = useState<string | null | any>(null);
+
   const profile = useAppSelector(profileSelector.profile);
-  console.log(profile);
 
   const handleAvatarUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedImage = event.currentTarget?.files?.[0];
-    if (!selectedImage) return;
-
-    const imageRef = ref(storage, `/avatars/${selectedImage.name}`);
-    uploadBytes(imageRef, selectedImage).then((snapshot) => {
-      getDownloadURL(snapshot.ref).then((url) => {
-        setAvatarUrl(url);
-        dispatch(profileMiddleware.updateProfileImage(url));
-
-        setIsEditVisible(true);
-      });
-    });
+    if (event.currentTarget?.files?.[0]) {
+      setSelectedImage(event.currentTarget?.files?.[0]);
+      getBase64(event.currentTarget?.files?.[0]).then((r) =>
+        setPreviewImage(r),
+      );
+      setIsEditVisible(true);
+    }
   };
-
-  const handleCoverImageUpload = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const selectedCoverImage = event.currentTarget?.files?.[0];
-    if (!selectedCoverImage) return;
-
-    const imageRef = ref(storage, `/avatars/${selectedCoverImage.name}`);
-    uploadBytes(imageRef, selectedCoverImage).then((snapshot) => {
-      getDownloadURL(snapshot.ref).then((url) => {
-        setCoverImageUrl(url);
-      });
+  const getBase64 = (file: Blob): Promise<string | ArrayBuffer | null> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
     });
-  };
 
   const handleAvatarInputClick = () => {
     const input = document.getElementById("uploadAvatarInput");
     input?.click();
   };
-  const handleCoverImageInputClick = () => {
-    const input = document.getElementById("uploadCoverImageInput");
-    input?.click();
-  };
   const handleImageSave = () => {
-    dispatch(profileMiddleware.updateUserAvatar(avatarUrl));
-    setIsEditVisible(false);
+    if (!selectedImage) return;
+    const imageRef = ref(storage, `/avatars/${selectedImage.name}`);
+    uploadBytes(imageRef, selectedImage).then((snapshot) => {
+      getDownloadURL(snapshot.ref).then((url) => {
+        dispatch(profileMiddleware.updateUserAvatar(url));
+        dispatch(profileMiddleware.getProfile());
+        setSelectedImage(null);
+        setPreviewImage(null);
+        setIsEditVisible(false);
+      });
+    });
   };
 
   useEffect(() => {
@@ -65,44 +62,14 @@ export const Profile = () => {
 
   return (
     <>
-      <div className="flex flex-col mt-4 h-[100vh] items-center bg-[#f0f8ff]">
-        <div className="relative h-2/4 w-9/12 border-2 border-gray-900 mt-2 rounded-xl">
+      <div className="flex flex-col h-[100vh] items-center bg-[#f0f8ff] ">
+        <div className="relative h-2/4 w-full border-b-2 border-gray-300">
           <img
-            alt="cover Photo"
-            src={coverImageUrl}
-            className="relative w-full h-full rounded-lg"
+            alt="coverImage"
+            src="https://media.licdn.com/dms/image/C4D12AQHMPBvE3avWzg/article-inline_image-shrink_1000_1488/0/1616872522462?e=1717632000&v=beta&t=B2RDXKlD9iDknbjTNXv2r4ntyX3093bqwYqEzjN_Z9E"
+            className="relative w-full h-full"
           />
-          <div
-            onClick={handleCoverImageInputClick}
-            className=" cursor-pointer absolute flex justify-center items-center bg-neutral-200 w-48 h-9 right-8 bottom-2 z-10 rounded"
-          >
-            <input
-              id="uploadCoverImageInput"
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleCoverImageUpload}
-            />
-            <label
-              htmlFor="uploadCoverImageInput"
-              className="flex flex-col items-center gap-2 cursor-pointer"
-            ></label>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className="w-5 h-5 mr-2"
-            >
-              <path
-                fillRule="evenodd"
-                d="M1 8a2 2 0 0 1 2-2h.93a2 2 0 0 0 1.664-.89l.812-1.22A2 2 0 0 1 8.07 3h3.86a2 2 0 0 1 1.664.89l.812 1.22A2 2 0 0 0 16.07 6H17a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8Zm13.5 3a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM10 14a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"
-                clipRule="evenodd"
-              />
-            </svg>
-
-            <div className="text-black">Edit cover photo</div>
-          </div>
-          <div className="absolute text-center -bottom-20 left-20">
+          <div className="absolute text-center -bottom-20 left-0 right-0">
             {isUploadButtonVisible ? (
               <div className="mb-2">
                 <button
@@ -115,32 +82,19 @@ export const Profile = () => {
                 </button>
               </div>
             ) : null}
-            <div>
+            <div className="flex justify-center">
               {isEditVisible ? (
-                <div className="flex">
+                <div className="flex mb-2">
                   <button
                     onClick={handleAvatarInputClick}
                     className="flex p-2.5 rounded-xl hover:rounded-3xl transition-all duration-300 text-gray-600"
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-6 w-6"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                      />
-                    </svg>
+                    <EditIcon />
                   </button>
                   <div>
                     <button
                       onClick={handleImageSave}
-                      className="mt-2  hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
+                      className="mt-2 text-white bg-slate-500 hover:bg-slate-700 font-semibold py-2 px-4  hover:border-transparent rounded"
                     >
                       Save
                     </button>
@@ -148,7 +102,8 @@ export const Profile = () => {
                 </div>
               ) : null}
             </div>
-            <div className="flex flex-col items-center rounded-full mb-1 mt-2 border-gray-300 bg-gray-50 shadow-md">
+
+            <div className="flex flex-col items-center">
               <input
                 id="uploadAvatarInput"
                 type="file"
@@ -162,25 +117,18 @@ export const Profile = () => {
               ></label>
 
               <div className="relative rounded-full flex w-[10rem] h-[10rem]  ring-2 ring-gray-300">
-                {!profile.avatarUrl ? (
+                {!previewImage && !profile?.avatarUrl ? (
                   <div className="relative w-full h-full overflow-hidden bg-gray-100 rounded-full dark:bg-gray-400">
-                    <svg
-                      className="absolute w-full h-full text-gray-200"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                        clipRule="evenodd"
-                      ></path>
-                    </svg>
+                    <DefaultAvatarIcon />
+                  </div>
+                ) : isAvatarUploadLoading ? (
+                  <div className="w-full flex items-center justify-center">
+                    <Loading />
                   </div>
                 ) : (
                   <img
                     alt="avatar"
-                    src={profile.avatarUrl}
+                    src={previewImage ?? profile?.avatarUrl}
                     className=" w-full h-full rounded-full"
                   />
                 )}
@@ -188,22 +136,9 @@ export const Profile = () => {
                   <div className="relative rounded-full bg-gray-300">
                     <button
                       onClick={handleAvatarInputClick}
-                      className="absolute right-[-12px] bottom-0 flex p-2.5 rounded-xl hover:rounded-3xl transition-all duration-300 text-gray-800"
+                      className="absolute right-[-10px] bottom-0 flex p-2.5 rounded-xl hover:rounded-3xl transition-all duration-300 text-gray-800"
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className=" h-8 w-8 bg-gray-200 hover:bg-gray-300 rounded-full p-[2px]"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                        />
-                      </svg>
+                      <AvatarEditIcon />
                     </button>
                   </div>
                 ) : null}
@@ -211,14 +146,11 @@ export const Profile = () => {
             </div>
           </div>
         </div>
-
-        {/*<div className="w-10/12 h-[0.20rem] bg-neutral-700 mb-2"></div>*/}
-
-        <div className="text-center mt-2">
+        <div className="text-center mt-20 z-[1000]">
           <p className="text-4xl font-bold">
-            {profile.name} {profile.surname}
+            {profile?.name} {profile?.surname}
           </p>
-          <p>{profile.email} </p>
+          <p>{profile?.email} </p>
         </div>
       </div>
     </>

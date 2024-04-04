@@ -1,21 +1,3 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-
-.visuallyHidden {
-    position: absolute !important;
-    height: 1px;
-    width: 1px;
-    overflow: hidden;
-    clip: rect(1px, 1px, 1px, 1px);
-}
-
-input.visuallyHidden:is(:focus, :focus-within) + label {
-    outline: thin dotted;
-}
-
-
-/*body{*/
-/*    overflow: hidden;*/
-/*}*/

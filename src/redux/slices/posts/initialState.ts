@@ -1,12 +1,7 @@
 import { IPostsProps } from "../../../types/reduxTypes/postsStateTypes";
 
 export const getInitialState = (): IPostsProps => ({
-  post: {
-    id: 0,
-    imageUrl: "",
-    postText: "",
-    title: "",
-  },
+  post: null,
   isPostsLoading: false,
   posts: [],
 });

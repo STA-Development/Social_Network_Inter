@@ -1,7 +1,7 @@
 import { IIndividualPost } from "../../Interfaces/postsTypes";
 
 export interface IPostsProps {
-  post: IIndividualPost;
+  post: IIndividualPost | null;
   isPostsLoading?: boolean;
   posts?: IIndividualPost[];
 }

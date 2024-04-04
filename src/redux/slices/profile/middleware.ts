@@ -1,7 +1,7 @@
 import { AppDispatch } from "../../store";
 import { profileSlice } from "./index";
 import API from "../../../manager/API";
-import { dispatch } from "../../hooks";
+import { IProfileFormData } from "../../../Interfaces/profileTypes";
 
 const {
   setProfileLoading,
@@ -21,6 +21,8 @@ const getProfile = () => async (dispatch: AppDispatch) => {
     if (error.message && error.response?.status === 404) {
       dispatch(setShouldRedirectToCreateProfile(true));
     }
+  } finally {
+    dispatch(setProfileLoading(false));
   }
 };
 
@@ -29,21 +31,18 @@ const updateProfileImage = (image: string) => async (dispatch: AppDispatch) => {
 };
 
 const sendProfileData =
-  (data: object, callBack: () => void) => async (dispatch: AppDispatch) => {
+  (data: IProfileFormData, callBack: () => void) =>
+  async (dispatch: AppDispatch) => {
     try {
       dispatch(setProfileLoading(true));
       await API.profile.sendUserProfileInfo(data);
       callBack();
-    } catch (error: any) {
-      throw error;
+    } catch (error: unknown) {
+      throw new Error("Profile info is not sent");
+    } finally {
+      dispatch(setProfileLoading(false));
     }
   };
-
-const resetProfile = (dispatch: AppDispatch) => {
-  dispatch(
-    setProfile({ id: 0, name: "", surname: "", avatarUrl: "", email: "" }),
-  );
-};
 
 const shouldRedirectToCreateProfile =
   (shouldRedirect: boolean) => async (dispatch: AppDispatch) => {
@@ -55,9 +54,9 @@ const updateUserAvatar =
     try {
       dispatch(setProfileImageLoading(true));
       await API.profile.updateUserAvatar(avatarURL);
-    } catch (error) {
-      console.log(error);
-      throw new Error();
+      dispatch(setUserAvatar(avatarURL));
+    } catch (error: unknown) {
+      throw new Error("Image upload failed");
     } finally {
       dispatch(setProfileImageLoading(false));
     }
@@ -69,5 +68,4 @@ export default {
   shouldRedirectToCreateProfile,
   updateUserAvatar,
   updateProfileImage,
-  resetProfile,
 };

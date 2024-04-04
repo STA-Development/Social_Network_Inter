@@ -7,7 +7,7 @@ import { Posts } from "./pages/posts";
 import { Feed } from "./pages/feed";
 import { Navbar } from "./Components/Navbar";
 import { Profile } from "./pages/profile";
-import { CreateProfile } from "./Components/CreateProfile";
+import { CreateProfile } from "./pages/createProfile";
 
 function App() {
   return (

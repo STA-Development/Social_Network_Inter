@@ -1,15 +1,11 @@
 import { getEnvironmentalVariables } from "../utils/getEnvironmentalVariables";
 import axios, { AxiosInstance } from "axios";
-import firebase, { auth } from "../firebase";
 
 const { REACT_APP_API_URL } = getEnvironmentalVariables();
 
 class RequestManager {
   private static instance: AxiosInstance;
   static getCreateInstance(): AxiosInstance {
-    // if (RequestManager.instance) {
-    //   return RequestManager.instance;
-    // }
     const getServerUrl = () => REACT_APP_API_URL;
 
     const axiosInstance = axios.create({ baseURL: getServerUrl() });
@@ -23,7 +19,6 @@ class RequestManager {
         });
 
         if (!config.headers["Content-Type"]) {
-          // Check if Content-Type exists
           config.headers["Content-Type"] = "application/json";
         }
 
