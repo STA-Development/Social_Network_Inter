@@ -35,12 +35,9 @@ export const IndividualPost = ({ post }: IPostsProps) => {
           </p>
         </div>
         <div className="flex items-center mt-1">
-          <Link
-            to="#"
-            className="-mt-2 text-md font-bold text-white bg-gray-700 rounded-full px-5 py-2 hover:bg-gray-800"
-          >
+          <button className="-mt-2 text-md font-bold text-white bg-gray-700 rounded-full px-5 py-2 hover:bg-gray-800">
             Edit
-          </Link>
+          </button>
         </div>
       </div>
       <p>{post?.postText}</p>
