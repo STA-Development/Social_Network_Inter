@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { dispatch, useAppSelector } from "../redux/hooks";
 import { profileMiddleware, profileSelector } from "../redux/slices/profile";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -15,6 +15,7 @@ export const Profile = () => {
   const isAvatarUploadLoading = useAppSelector(
     profileSelector.isProfileImageLoading,
   );
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const [selectedImage, setSelectedImage] = useState<null | File>(null);
   const [previewImage, setPreviewImage] = useState<string | null | any>(null);
@@ -39,8 +40,7 @@ export const Profile = () => {
     });
 
   const handleAvatarInputClick = () => {
-    const input = document.getElementById("uploadAvatarInput");
-    input?.click();
+    inputRef?.current?.click();
   };
   const handleImageSave = () => {
     if (!selectedImage) return;
@@ -106,6 +106,7 @@ export const Profile = () => {
             <div className="flex flex-col items-center">
               <input
                 id="uploadAvatarInput"
+                ref={inputRef}
                 type="file"
                 accept="image/*"
                 className="hidden"

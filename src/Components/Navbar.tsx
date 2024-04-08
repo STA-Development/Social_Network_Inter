@@ -15,7 +15,7 @@ export const Navbar = () => {
   const isAuthLoading = useAppSelector(userSelector.isAuthLoading);
   const isUserAuthenticated = useAppSelector(userSelector.isUserAuth);
   onAuthStateChanged(auth, (user) => {
-    dispatch(userMiddleware.isAuthLoading(false));
+    dispatch(userMiddleware.isAuthLoading(true));
     dispatch(userMiddleware.isUserAuth(!!user));
   });
   const shouldRedirectToCreateProfile = useAppSelector(
@@ -43,7 +43,7 @@ export const Navbar = () => {
         </Link>
 
         <div className="flex md:order-2">
-          {isAuthLoading ? null : !isUserAuthenticated ? (
+          {!isAuthLoading ? null : !isUserAuthenticated ? (
             <>
               <button
                 type="button"
