@@ -1,34 +1,20 @@
-import { auth, provider } from "../firebase";
-import { signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { dispatch } from "../redux/hooks";
+import { userMiddleware } from "../redux/slices/user";
 
 export const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const handleSignIn = async (e: React.FormEvent<HTMLButtonElement>) => {
+  const handleSignIn = (e: React.FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password,
-      );
-      const user = userCredential.user;
-      navigate("/");
-    } catch (error: unknown) {
-      throw new Error("Sign in failed")
-    }
+    dispatch(userMiddleware.userSignInWithEmailAndPassword(email, password));
+    navigate("/profile");
   };
-  const handleGoogleSignIn = async () => {
-    try {
-      const userCredential = await signInWithPopup(auth, provider);
-      const user = userCredential.user;
-      navigate("/");
-    } catch (error: unknown) {
-      throw new Error("Sign in failed")
-    }
+  const handleGoogleSignIn = () => {
+    dispatch(userMiddleware.userSignInWithGoogle());
+    navigate("/profile");
   };
 
   return (
@@ -68,12 +54,6 @@ export const Login = () => {
               onClick={handleSignIn}
             >
               Login
-            </button>
-            <button
-              className="bg-green-500 text-white font-bold px-2 py-4 mx-20 my-4"
-              onClick={() => navigate("/signup")}
-            >
-              Create new account
             </button>
           </div>
         </form>

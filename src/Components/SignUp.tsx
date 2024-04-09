@@ -1,37 +1,22 @@
 import React, { useState } from "react";
-import { signInWithPopup, createUserWithEmailAndPassword } from "firebase/auth";
-import { auth, provider } from "../firebase";
 import { Link, useNavigate } from "react-router-dom";
+import { dispatch } from "../redux/hooks";
+import { userMiddleware } from "../redux/slices/user";
 
 export const SignUp = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSignUp = async (e: React.FormEvent<HTMLButtonElement>) => {
+  const handleSignUp = (e: React.FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password,
-      );
-      const user = userCredential.user;
-
-      navigate("/login");
-    } catch (error: unknown) {
-      throw new Error("Sign up failed")
-    }
+    dispatch(userMiddleware.userSignUpWithEmailAndPassword(email, password));
+    navigate("/login");
   };
 
-  const handleGoogleSignUp = async () => {
-    try {
-      const userCredential = await signInWithPopup(auth, provider);
-      const user = userCredential.user;
-      navigate("/login");
-    } catch (error: unknown) {
-      throw new Error("Sign up failed")
-    }
+  const handleGoogleSignUp = () => {
+    dispatch(userMiddleware.userSignUpWithGoogle());
+    navigate("/login");
   };
 
   return (
@@ -53,16 +38,6 @@ export const SignUp = () => {
         <div>
           <form>
             <div className="flex flex-col justify-around">
-              <input
-                type="text"
-                placeholder="Name"
-                className="p-2 m-2 rounded border-inherit border-2"
-              />
-              <input
-                type="text"
-                placeholder="Surname"
-                className="p-2 m-2 rounded border-inherit border-2"
-              />
               <input
                 type="email"
                 placeholder="Email"
@@ -87,7 +62,7 @@ export const SignUp = () => {
                 </p>
               </div>
               <button
-                className="px-4 py-3 mt-12 mx-12 mb-2 mx-2 border flex justify-center gap-2 bg-green-600 border-slate-200 rounded-lg text-white hover:border-slate-400 hover:text-slate-100 hover:shadow transition duration-150"
+                className="px-4 py-3 mt-12 mx-12 mb-2 border flex justify-center gap-2 bg-green-600 border-slate-200 rounded-lg text-white hover:border-slate-400 hover:text-slate-100 hover:shadow transition duration-150"
                 onClick={handleSignUp}
               >
                 Sign Up

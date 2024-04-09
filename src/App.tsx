@@ -1,23 +1,31 @@
 import React from "react";
 import { Login } from "./Components/Login";
 import { SignUp } from "./Components/SignUp";
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { Home } from "./Components/Home";
-import { Posts } from "./Components/Posts";
-import { Feed } from "./Components/Feed";
-import { Header } from "./Components/Header";
+import { Posts } from "./pages/posts";
+import { Feed } from "./pages/feed";
+import { Navbar } from "./Components/Navbar";
+import { Profile } from "./pages/profile";
+import { CreateProfile } from "./pages/createProfile";
 
 function App() {
   return (
     <div>
-      <Header />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/posts" element={<Posts />} />
-        <Route path="/feed" element={<Feed />} />
-      </Routes>
+      <div>
+        <Navbar />
+      </div>
+      <div className="pt-24">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/posts" element={<Posts />} />
+          <Route path="/feed" element={<Feed />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/createProfile" element={<CreateProfile />} />
+        </Routes>
+      </div>
     </div>
   );
 }
