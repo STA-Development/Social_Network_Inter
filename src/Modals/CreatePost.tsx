@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { dispatch, useAppSelector } from "../redux/hooks";
 import { postsMiddleware } from "../redux/slices/posts";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { storage } from "../firebase";
 import { profileSelector } from "../redux/slices/profile";
 import { useForm } from "react-hook-form";
 import { IPostFormData } from "../Interfaces/postsTypes";
+import useImageUpload from "../hooks/useImageUpload";
+import { getBase64 } from "../utils/getBase64";
 
 export const CreatePost = ({
   showModal,
@@ -22,28 +22,20 @@ export const CreatePost = ({
     formState: { errors },
   } = useForm<IPostFormData>();
   const [previewImage, setPreviewImage] = useState<string | null | any>(null);
-  const [selectedPostImage, setSelectedPostImage] = useState<null | File>(null);
   const [showErrorMessage, setShowErrorMessage] = useState<boolean>(true);
-
+  const { selectedImage, setSelectedImage, uploadImage } = useImageUpload();
   const profile = useAppSelector(profileSelector.profile);
 
   const handlePostImageUpload = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     if (event.currentTarget?.files?.[0]) {
-      setSelectedPostImage(event.currentTarget?.files?.[0]);
+      setSelectedImage(event.currentTarget?.files?.[0]);
       getBase64(event.currentTarget?.files?.[0]).then((r) =>
         setPreviewImage(r),
       );
     }
   };
-  const getBase64 = (file: Blob): Promise<string | ArrayBuffer | null> =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = (error) => reject(error);
-    });
 
   const handleClose = () => {
     setShowModal(false);
@@ -53,14 +45,13 @@ export const CreatePost = ({
   const onModalSubmit = handleSubmit((data: IPostFormData) => {
     if (profile) {
       const profileId = profile.id;
-      if (!selectedPostImage) return;
-      const imageRef = ref(storage, `/images/${selectedPostImage.name}`);
-      uploadBytes(imageRef, selectedPostImage).then((snapshot) => {
-        getDownloadURL(snapshot.ref).then((imageUrl) => {
-          dispatch(
-            postsMiddleware.createPost({ ...data, imageUrl, profileId }, 1),
-          );
-        });
+      if (!selectedImage) return;
+      uploadImage(selectedImage, "images").then((url) => {
+        console.log(url);
+        const imageUrl = url || "";
+        dispatch(
+          postsMiddleware.createPost({ ...data, imageUrl, profileId }, 1),
+        );
       });
       setPreviewImage(null);
       setShowModal(false);

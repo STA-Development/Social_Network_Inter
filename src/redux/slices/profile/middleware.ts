@@ -50,11 +50,13 @@ const shouldRedirectToCreateProfile =
   };
 
 const updateUserAvatar =
-  (avatarURL: string) => async (dispatch: AppDispatch) => {
+  (avatarURL: string | null) => async (dispatch: AppDispatch) => {
     try {
       dispatch(setProfileImageLoading(true));
       await API.profile.updateUserAvatar(avatarURL);
-      dispatch(setUserAvatar(avatarURL));
+      if (avatarURL != null) {
+        dispatch(setUserAvatar(avatarURL));
+      }
     } catch (error: unknown) {
       throw new Error("Image upload failed");
     } finally {

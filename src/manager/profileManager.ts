@@ -14,7 +14,7 @@ const profileManager = {
   sendUserProfileInfo(data: IProfileFormData) {
     return axiosInstance.post(`profile`, data);
   },
-  updateUserAvatar(avatarURL: string) {
+  updateUserAvatar(avatarURL: string | null) {
     return axiosInstance.patch("/profile", { avatarUrl: avatarURL });
   },
 };

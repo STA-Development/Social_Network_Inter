@@ -23,3 +23,12 @@ export interface IPostFormData {
   previewImage: string | null | any;
   profileId?: number;
 }
+
+export interface IImageUploadHook {
+  selectedImage: File | null;
+  setSelectedImage: React.Dispatch<React.SetStateAction<File | null>>;
+  uploadImage: (
+    imageFile: File | null,
+    fileName: string,
+  ) => Promise<string | null>;
+}

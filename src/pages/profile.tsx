@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { dispatch, useAppSelector } from "../redux/hooks";
 import { profileMiddleware, profileSelector } from "../redux/slices/profile";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { storage } from "../firebase";
 import { Loading } from "../Components/Loading";
 import EditIcon from "../Icons/EditIcon";
 import DefaultAvatarIcon from "../Icons/DefaultAvatarIcon";
 import AvatarEditIcon from "../Icons/AvatarEditicon";
+import useImageUpload from "../hooks/useImageUpload";
+import { getBase64 } from "../utils/getBase64";
 
 export const Profile = () => {
   const [isUploadButtonVisible, setIsUploadButtonVisible] =
@@ -17,8 +17,9 @@ export const Profile = () => {
   );
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const [selectedImage, setSelectedImage] = useState<null | File>(null);
+  // const [selectedImage, setSelectedImage] = useState<null | File>(null);
   const [previewImage, setPreviewImage] = useState<string | null | any>(null);
+  const { selectedImage, setSelectedImage, uploadImage } = useImageUpload();
 
   const profile = useAppSelector(profileSelector.profile);
 
@@ -31,28 +32,18 @@ export const Profile = () => {
       setIsEditVisible(true);
     }
   };
-  const getBase64 = (file: Blob): Promise<string | ArrayBuffer | null> =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = (error) => reject(error);
-    });
 
   const handleAvatarInputClick = () => {
     inputRef?.current?.click();
   };
   const handleImageSave = () => {
     if (!selectedImage) return;
-    const imageRef = ref(storage, `/avatars/${selectedImage.name}`);
-    uploadBytes(imageRef, selectedImage).then((snapshot) => {
-      getDownloadURL(snapshot.ref).then((url) => {
-        dispatch(profileMiddleware.updateUserAvatar(url));
-        dispatch(profileMiddleware.getProfile());
-        setSelectedImage(null);
-        setPreviewImage(null);
-        setIsEditVisible(false);
-      });
+    uploadImage(selectedImage, "avatars").then((url) => {
+      dispatch(profileMiddleware.updateUserAvatar(url));
+      dispatch(profileMiddleware.getProfile());
+      setSelectedImage(null);
+      setPreviewImage(null);
+      setIsEditVisible(false);
     });
   };
 

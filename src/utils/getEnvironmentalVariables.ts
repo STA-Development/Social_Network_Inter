@@ -13,8 +13,3 @@ export const getEnvironmentalVariables = () => {
       process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
   };
 };
-
-export const isUserAuthenticated = () => {
-  const token = localStorage.getItem("accessToken");
-  return !!token;
-};

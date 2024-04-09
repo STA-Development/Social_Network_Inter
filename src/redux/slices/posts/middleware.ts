@@ -6,7 +6,16 @@ import { IIndividualPost } from "../../../Interfaces/postsTypes";
 const { setUserPosts, setPostsLoading } = postsSlice.actions;
 
 const createPost =
-  (data: IIndividualPost, page: number) => async (dispatch: AppDispatch) => {
+  (
+    data: {
+      postText: string;
+      profileId: number;
+      imageUrl: string;
+      title: string;
+    },
+    page: number,
+  ) =>
+  async (dispatch: AppDispatch) => {
     try {
       dispatch(setPostsLoading(true));
       await API.posts.createPost(data);
